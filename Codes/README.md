@@ -4,7 +4,7 @@
 1. Torch7
 2. MATLAB
 3. [Shaded Error bar MATLAB toolbox](https://github.com/raacampbell/shadedErrorBar)
-4. Preferably a *GPU* to aid computation speed -- *If not, edit the codes to remove the word ``cuda''*
+4. Preferably a *GPU* to aid computation speed -- *If not, edit the codes to remove the word "cuda"*
 
 ## A brief outline
 * **data_manipulate.lua** - splits the entire data matrix into baseline, 30min, 60min and 90min sessions.
