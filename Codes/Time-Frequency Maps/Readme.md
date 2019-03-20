@@ -9,4 +9,5 @@ The file descriptions are listed in the order they were run (or should be run fo
 * **ccGAP_deploy.lua** - Uses the estimated filter importances to generate activation maps for the CON and EXE classes from the entire dataset.
 * **featureVec_generate.lua** - Saves a hdf5 file containing the feature maps (or layer representations) of each input sample in the dataset, that is used by *motor_learning_scores_corr.m* and *features_tSNE_trajectory.m* files.
 * **motor_learning_scores_corr.m** - Requires the feature maps from a trained model to be saved in a hdf5 file before running this *(See Line 16 of this file)*. Calculates the correlation coefficient of the features with motor learning scores.
+* **features_tSNEplots.m** - Plots the layer representations in a lower dimensional to show the group and subject discriminability.
 * **features_tSNE_trajectory.m** - Plots the trajectory of layer representations (or feature maps) through time in a lower 2D dimension.
