@@ -13,10 +13,12 @@ plot(CON_retention_scores_24h_8h+CON_retention_scores_8h_b5);
 hold on;
 plot(EXE_retention_scores_24h_8h+EXE_retention_scores_8h_b5);
 
-A = hdf5read('../Topo_Maps/Layer3.h5','/home/features');
+A = hdf5read('Layer3_90min.h5','/home/features'); %Layer3.h5 for topographical maps, Layer3_90min.h5 for TF maps
 A = permute(A,[2 1]);
-A = reshape(A,2500,25,8);
+A = reshape(A,7500,25,8); %2500 for Topographical Maps, 7500 for TF maps
 feats = squeeze(mean(A,1));
+feats_CON = feats(1:13,:);
+feats_EXE = feats(14:end,:);
 feats_with_bias = [ones(25,1),feats];
 b = regress(retention_scores_24h_8h',feats_with_bias);
 corrScores = zeros(8,1);
@@ -34,11 +36,25 @@ disp('Step Wise Fit for Retention Scores 24h - Baseline');
 [B,SE,PVAL,INMODEL,STATS,NEXTSTEP,HISTORY] = stepwisefit(feats,(retention_scores_24h_8h+retention_scores_8h_b5)');
 
 figure;
-scatter(feats(:,1),retention_scores_24h_8h,100,'filled'); hold on
-model= fitlm(feats(:,1),retention_scores_24h_8h); 
+% scatter plot for both CON and EXE
+scatter(feats(:,8),retention_scores_24h_8h,200,'filled','HandleVisibility','off'); hold on
+% fit a line for all subjects
+model= fitlm(feats(:,8),retention_scores_24h_8h); 
 P_c = model.Coefficients.Estimate;
-x_scal = (min(feats(:,1)):(max(feats(:,1))-min(feats(:,1)))/100:max(feats(:,1))); y_scal = P_c(1) + P_c(2)*x_scal;
-plot(x_scal,y_scal,'k--')
-xlabel('Extracted Feature #1');
+x_scal = (min(feats(:,8))-0.05:(max(feats(:,8))-min(feats(:,8))+0.1)/100:max(feats(:,8))+0.05); y_scal = P_c(1) + P_c(2)*x_scal;
+plot(x_scal,y_scal,'k--','linewidth',3)
+% fit a line for CON subjects
+%model= fitlm(feats_CON(:,8),CON_retention_scores_24h_8h); 
+%P_c = model.Coefficients.Estimate;
+%x_scal = (min(feats_CON(:,8))-0.1:(max(feats_CON(:,8))-min(feats_CON(:,8))+0.2)/100:max(feats_CON(:,8))+0.1); y_scal = P_c(1) + P_c(2)*x_scal;
+%plot(x_scal,y_scal,'b--','linewidth',3)
+% fit a line for EXE subjects
+%model= fitlm(feats_EXE(:,8),EXE_retention_scores_24h_8h); 
+%P_c = model.Coefficients.Estimate;
+%x_scal = (min(feats_EXE(:,8))-0.1:(max(feats_EXE(:,8))-min(feats_EXE(:,8))+0.2)/100:max(feats_EXE(:,8))+0.1); y_scal = P_c(1) + P_c(2)*x_scal;
+%plot(x_scal,y_scal,'r--','linewidth',3)
+
+xlabel('Extracted Feature #8');
 ylabel('Retention Motor Score Improvement (24hr - 8hr)');
-title('Scatter plot of Retention Motor Scores (24hr - 8hr) vs Extracted feature #1');
+title('Scatter plot of Retention Motor Scores (24hr - 8hr) vs Extracted feature #8');
+legend('Linear fit for all subjects','Linear fit for Control group','Linear fit for Exercise group');

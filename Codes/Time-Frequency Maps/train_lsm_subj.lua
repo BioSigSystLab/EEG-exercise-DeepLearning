@@ -5,7 +5,7 @@ require 'gnuplot';
 require 'cutorch';
 require 'cunn';
 --local matio = require 'matio';
-
+torch.manualSeed(13)
 
 --baseline = torch.load('/media/arna/340fd3c9-2648-4333-9ec9-239babc34bb7/arna_data/EEG/torch_baseline.t7')
 baseline = torch.load('/media/arna/340fd3c9-2648-4333-9ec9-239babc34bb7/arna_data/EEG/Baseline.t7')
@@ -70,6 +70,8 @@ for fold=1,10 do
     testLabels = {};
     testLabels_subj = {};
 
+    local randLabels = torch.cat({torch.ones(13),(2)*torch.ones(12)}) -- for random permutation of labels at subject level
+    randLabels = randLabels:index(1,torch.randperm(randLabels:size(1)):long()) -- for random permutation of labels at subject level
     local trainTestSubjArray_exe = torch.randperm(exe_subjects);
     local trainTestSubjArray_con = torch.randperm(con_subjects);
     trainPortion = 0.9;
@@ -89,11 +91,11 @@ for fold=1,10 do
         else
             trainData_b[#trainData_b+1] = baseline[i];
             trainData_p[#trainData_p+1] = present[i];
-            trainLabels[#trainLabels+1] = Labels[i];
+            trainLabels[#trainLabels+1] = Labels[i]; -- train with original labels
+            -- trainLabels[#trainLabels+1] = randLabels[SubjLabels[i]]; -- train with random permutation of labels at subject level
             trainLabels_subj[#trainLabels_subj+1] = SubjLabels[i];
         end
     end
-
 
     function TableToTensor(table)
       local tensorSize = table[1]:size()
@@ -117,6 +119,7 @@ for fold=1,10 do
     testLabels = torch.Tensor(testLabels);
     testLabels_subj = torch.Tensor(testLabels_subj);
 
+    -- trainLabels = trainLabels:index(1,torch.randperm(trainLabels:size(1)):long()) -- random permutation of labels at timepoint level
     print("data loading done =====>")
     print(testLabels_subj:min(), testLabels_subj:max(), testLabels_subj:mean())
 
@@ -169,7 +172,7 @@ for fold=1,10 do
         advLoss = subj_criterion:forward(out1,subj_y_tot);
         local gradAdvLoss = subj_criterion:backward(out1,subj_y_tot);
         SubjModel:backward(extractor.output,gradAdvLoss);
-        lambda = 13;--1.2542; --loss/advLoss;
+        lambda = 0;--1.2542; --loss/advLoss;
         --local gradMinimax = SubjModel:updateGradInput(extractor.output, gradAdvLoss)--]]
         --extractor:backward(input,-lambda*gradMinimax);
 
@@ -198,7 +201,7 @@ for fold=1,10 do
         return advLoss, gradThetaAdv
     end
 
-    batchSize = 100
+    batchSize = 128
 
     indices = torch.randperm(trainData_b:size(1)):long()
     trainData_b = trainData_b:index(1,indices)
@@ -216,8 +219,8 @@ for fold=1,10 do
     epochs = 20
     teAccuracy = 0
     print('Training Starting')
-    local optimParams = {learningRate = 0.001, learningRateDecay = 0.0001, weightDecay = 0.012}
-    local adv_optimParams = {learningRate = 0.001, learningRateDecay = 0.0001, weightDecay = 0.012}
+    local optimParams = {learningRate = 0.001, learningRateDecay = 0.0001, weightDecay = 0.002}
+    local adv_optimParams = {learningRate = 0.001, learningRateDecay = 0.0001, weightDecay = 0.002}
     local _,loss
     local losses = {}
     local adv_losses = {}
@@ -248,17 +251,17 @@ for fold=1,10 do
         local plots={{'Training Loss', torch.linspace(1,#losses,#losses), torch.Tensor(losses), '-'}}
         plots2={{'Adversary', torch.linspace(1,#adv_losses,#adv_losses), torch.Tensor(adv_losses), '-'}}
         plots3={{'Desired Adversary', torch.linspace(1,#desired_adv_losses,#desired_adv_losses), torch.Tensor(desired_adv_losses), '-'}}
-        gnuplot.pngfigure('Training_vol_90.png')
+        gnuplot.pngfigure('Training_90_correctLabelsNoAdversary.png')
         gnuplot.plot(table.unpack(plots))
         gnuplot.ylabel('Loss')
         gnuplot.xlabel('Batch #')
         gnuplot.plotflush()
-        gnuplot.pngfigure('TrainingAdv_vol_90.png')
+        gnuplot.pngfigure('TrainingAdv_90_correctLabelsNoAdversary.png')
         gnuplot.plot(table.unpack(plots2))
         gnuplot.ylabel('Loss')
         gnuplot.xlabel('Batch #')
         gnuplot.plotflush()
-        gnuplot.pngfigure('TrainingDesiredAdv_vol_90.png')
+        gnuplot.pngfigure('TrainingDesiredAdv_90_correctLabelsNoAdversary.png')
         gnuplot.plot(table.unpack(plots3))
         gnuplot.ylabel('Loss')
         gnuplot.xlabel('Batch #')
@@ -305,7 +308,7 @@ for fold=1,10 do
             print("Overall correct " .. correct .. " percentage correct" .. (100*correct/teSize) .. " % ")
             if correct>=teAccuracy or epoch<=2 then
                 teAccuracy=correct
-                torch.save('lsm_model_90min.t7',model)
+                torch.save('lsm_model_90min_correctLabelsNoAdversary.t7',model)
                 for i=1,#classes do
                    print(classes[i], 100*class_perform[i]/class_size[i] .. " % ")
                 end
@@ -318,7 +321,7 @@ for fold=1,10 do
     x2 = nil;
     collectgarbage()
     --torch.save('lsm_model.t7',model)
-    model = torch.load('lsm_model_90min.t7')
+    model = torch.load('lsm_model_90min_correctLabelsNoAdversary.t7')
     model:evaluate()
 
     N = testData_b:size(1)
@@ -357,3 +360,4 @@ end
 avgAccruacyArray = torch.Tensor(avgAccruacyArray);
 print(avgAccruacyArray);
 print("Average Accuracy for CV = ".. avgAccruacyArray:mean())
+print("Stdev Accuracy for CV = ".. avgAccruacyArray:std())

@@ -65,8 +65,8 @@ rng default
 tSNE_features = tsne(features_downsampled);
 toc
 figure;
-%subplot(1,1,1);hh1 = gscatter(tSNE_features(:,1),tSNE_features(:,2),Labels,'rrggbbmm','xo'); 
-subplot(1,1,1);hh1 = gscatter(tSNE_features(:,1),tSNE_features(:,2),Labels,'ck','oo^^ddxx'); 
+subplot(1,1,1);hh1 = gscatter(tSNE_features(:,1),tSNE_features(:,2),Labels,'rrggbbmm','xo'); 
+%subplot(1,1,1);hh1 = gscatter(tSNE_features(:,1),tSNE_features(:,2),Labels,'ck','oo^^ddxx'); 
 title('tSNE plots for Layer 3 Outputs with Group Labels');
 %subplot(2,1,2);hh2 = gscatter(tSNE_features(:,1),tSNE_features(:,2),SubjLabels); 
 %title('tSNE plots for Layer 3 Outputs with Subject Labels');
