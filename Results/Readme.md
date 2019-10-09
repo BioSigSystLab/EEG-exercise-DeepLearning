@@ -2,9 +2,10 @@
 
 | Method | Average validation accuracy over 10 folds (subject-level) |
 |:------:|:---------------------------------------------------------:|
-| Random Forests | 58.94 % |
-| Random Forests with frequency bands | 60.13 % |
-| Random Forests with Common SpatialPatterns | 45.94 % |
-| CNN without baseline normalizationarchitecture | 56.59 % |
-| CNN without subject adversary | 60 % |
-| *CNN with subject adversary* | *65.4 %* |
+| Random Forests | 59.97 ± 5.21 % |
+| Random Forests with frequency bands | 60.14 ± 5.59 % |
+| Random Forests with Common SpatialPatterns | 43.23 ± 4.44 % |
+| CNN without baseline normalizationarchitecture | 56.59 ± 4.04 % |
+| CNN without subject adversary | 59.29 ± 4.61 % |
+| *CNN with subject adversary* | *74.85 ± 5.65 %* |
+| Proposed CNN with labels shuffled at subject level | 62.57 ± 3.92 % |
