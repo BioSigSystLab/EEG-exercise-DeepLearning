@@ -12,4 +12,5 @@ The file descriptions are listed in the order they were run (or should be run fo
 * **features_tSNEplots.m** - Plots the layer representations in a lower dimensional to show the group and subject discriminability.
 * **features_tSNE_trajectory.m** - Plots the trajectory of layer representations (or feature maps) through time in a lower 2D dimension.
 ---------------
+* **python_RF.py, CSP_RF.py** - Implements RF and CSP to get baseline EEG decoding results
 * **GAP.lua, GAP_deploy.lua, GradCAM.lua** - Implements GAP and gradCAM to compare their performance against the ccGAP results
