@@ -1,4 +1,5 @@
-# EEG-matchingTaskClassification
+# EEG-exercise Deep Learning
+Code base for the paper titled **"Unfolding the effects of acute cardiovascular exercise on neural correlates of motor learning using Convolutional Neural Networks"**
 Deep Learning to analyse effect of bout of exercise on EEG data. <br/>
 Supervisors: Marie-Helene Boudrias & Georgios Mitsis <br/>
 The architecure of network is influenced by [Learning to See by Moving](https://arxiv.org/abs/1505.01596) paper. <br/>
